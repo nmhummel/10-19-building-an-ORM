@@ -7,11 +7,18 @@ class Tweet
         # is resonsible for assign the attributes that we get FROM the db to objects
         attr_hash.each do |key, value|
             if self.respond_to?("#{key.to_s}=")
-                self.send("#{key.to_s}=", value)
+                self.send("#{key.to_s}=", value) # send = call this method
             end
             #self.content=(value)
         end
         #{content: Faker::Quote.matz, author: 'Matz'}
+    end
+
+    def self.create(attr_hash={}) # empty here b/c default argument
+        # instantiate a new tweet
+        # save new tweet
+        tweet = self.new(attr_hash) # not empty here b/c sending in argument
+        tweet.save
     end
 
     def self.all
@@ -27,11 +34,15 @@ class Tweet
         self.new(obj_hash)
     end
 
+    def delete # delete one tweet, not all
+        sql = "DELETE FROM tweets WHERE id = ?"
+        DB[:conn].execute(sql, self.id) # we don't have an id variable, so it assumes it's a method, thus the self.id
+        self # returns the tweet we just deleted
+    end
+
 
     def save 
         # add the attr_accessor data to the db
-
-       
         if !!self.id  
              # if it is already saved, update it 
              sql = <<-SQL 
